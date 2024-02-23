@@ -14,7 +14,7 @@ Diffusion model is a generative model that can generate samples from a given dis
 
 ![diffusion examples](figs/dalle.png)
 
-The key component of the diffusion model is the score function, which is the gradient of the log probability of the data. Compared with directly learning the distribution, learning the score function given different noise levels is easier and more stable. 
+The key component of the diffusion model is the score function, which is the noise direction that can be used to update the sample to match the distribution. By learning the score function, the diffusion model can generate samples from the given distribution.
 
 $$
 \boldsymbol{x}_{i+1} \leftarrow \boldsymbol{x}_i+c \nabla \log p\left(\boldsymbol{x}_i\right)+\sqrt{2 c} \boldsymbol{\epsilon}, \quad i=0,1, \ldots, K
@@ -24,12 +24,16 @@ $$
 
 The unique properties of the diffusion model include:
 
-* **Multimodal**: It can handle multimodal action distributions
-* The method can be scaled to high-dimensional distribution matching problems. 
-* With sound mathematical foundation and standard training procedure via multi-stage diffusion, it is stable to train.
+* **Multimodal**: It can handle multimodal distributions, which is hard to learn my directly predicting the distribution.
+* **Scalable**: The method can be scaled to high-dimensional distribution matching problems. 
+* **Stable**: With a sound mathematical foundation and standard training procedure via multi-stage diffusion, it is stable to train.
+* **Non-autoregressive**: It can handle non-autoregressive and multimodal distribution matching by predicting the whole trajectory sequence at once.
 
 
 ## Motivation: why do we need a diffuser in control and planning?
+
+> compare with other generative models
+> what to learn here
 
 From the control and planning perspective, there are lots of scenarios where we need to match the distribution of the dataset, such as: 
 
@@ -37,37 +41,32 @@ From the control and planning perspective, there are lots of scenarios where we 
 | --- | --- | --- |
 | Imitation learning | Match the expert's action distribution with limited data. Common method like GAIL using adversarial training to match the distribution. BC cannot handle multimodal distribution. | Diffusion model can matching the distribution of the expert's action with high capacity and high expressiveness. |
 | Offline reinforcement learning | Perform better than dataset with a large number of demonstrations. Here need to make sure the policy's action distribution is close to the dataset while improving the performance. Common method like CQL penalize OOD samples, make the method overconserative. | Diffusion model can match the dataset's action and regularize the policy's action distribution. |
-| Model-based reinforcement learning | Match the dynamic model and (sometimes) policy's action distribution. First learning the model and then use the model to plan in a au
-to-regressive manner. This method suffers from compounding error. | Diffusion model can handle non-autoregressive and multimodal distribution matching by predicting the whole trajectory sequence at once. |
+| Model-based reinforcement learning | Match the dynamic model and (sometimes) policy's action distribution. First learning the model and then use the model to plan in a auto-regressive manner. This method suffers from compounding error. | Diffusion model can handle non-autoregressive and multimodal distribution matching by predicting the whole trajectory sequence at once. |
+
+## Practice: how to use the diffuser?
+
+### What to diffuse?
+By concatenating the state and action, we can diffuse the state-action sequence, which is like diffusing a single-channel image.
+
+|Task|Thing's to diffuse|How to diffuse|
+|---|---|---|
+|Image generation|![noise image](figs/denoise_image.gif)|![image diffuse](figs/image_diffuse.jpg)|
+|Planning|![Diffusion model diffuse future state-action sequence](figs/denoise_traj.gif)|![Diffuse process for next trajectory](figs/traj_diffuse.png)|
 
 
+### How to impose constraints/objectives?
 
-Why does diffusion work here?
-1. non-autoregressive (no sequential dependency): compounding error is not a problem, but still can generate any length of sequence with certain architecture choices
-2. multimodal: can handle multimodal action distributions
-3. matching the distribution: can match the distribution of the expert's action
-4.  High capacity + high expressiveness: can handle high-dimensional action spaces -> foundation models, 50 demonstrations per task
-5.  stable training: with a sound mathematical foundation and standard training procedure via multi-stage diffusion, it is stable to train
+**guidance function**
 
-smooth
+directly shift the distribution/cost or learned value etc or train a discriminator (classifier) to get the guidance function.
 
-## Practice: how to use diffuser?
+Predefined the guidance function:
 
-![diffusion for control overview](figs/planner_policy_model.png)
+$$
+\tilde{p}_\theta(\boldsymbol{\tau}) \propto p_\theta(\boldsymbol{\tau}) h(\boldsymbol{\tau})
+$$
 
-Things to diffuse: trajectory sequence as single channel image. 
-
-![Diffusion model diffuse future state-action sequence](figs/traj.png)
-
-![Diffuse process for next trajectory](figs/traj_diffuse.png)
-
-Architecture choices:
-
-* temporal convolutional network (TCN)
-
-How to make it condition on certain objectives?
-
-1. guidance function: directly shift the distribution / cost or learned value etc or train a discriminator (classifier) to get the guidance function.
+Learned guidance function:
 
 $$
 \begin{aligned}
@@ -77,7 +76,11 @@ $$
 \end{aligned}
 $$
 
-2. classifier-free method: does not need to train a classifier to get the guidance function, now two terms can be interpreted as unconditional score and conditional score.
+Possible issue: the distribution is pushing out the distribution of the data, which is not what we want.
+
+**classifier-free method**
+
+Does not need to train a classifier to get the guidance function, now two terms can be interpreted as unconditional score and conditional score.
 
 $$
 \begin{aligned}
@@ -87,9 +90,28 @@ $$
 \end{aligned}
 $$
 
-3. inpainting: fill the missing part of the distribution so as to constrains certain part of the distribution
+| Guidance function method | Classifier-free method |
+| --- | --- |
+| ![guidance function](figs/guidance_algo.png) | ![classifier-free guidance](figs/classifierfree_algo.png) |
+
+**inpainting**
+
+If the control problem has specific state constrains, we can just fix the state and fill the missing part of the distribution. This is very useful in goal reaching tasks.
+
+![inpainting](figs/inpaint.gif)
 
 ## Literatures: research progress in a diffuser for control and planning
+
+> safe diffuser, aloha, umi paper
+
+$$
+\color{red}\nabla_\tau \log 
+\color{magenta}P
+\color{black}( 
+\color{blue}{\tau} | 
+\color{green} y
+\color{black})
+$$
 
 Axis1: how to get the score function
 
@@ -99,12 +121,20 @@ Axis1: how to get the score function
 
 Axis2: what to diffuse
 
+![diffusion for control overview](figs/planner_policy_model.png)
+
 * action: directly diffuse for the next action
 * state: learn the model
 * state-sequence: diffuse for the next state sequence, or sometimes state-action sequence, or sometimes action sequence (for position control)
 
-## Limitations: what are the challenges?
+## Conclusion & Limitations: what are the challenges?
 
+**How diffusion work**
+Compared with learning the explicit policy directly or learning the energy-based model, the diffusion model can handle multimodal distribution and higher-dimensional distribution matching. 
+
+![Compare distribution with other models](figs/policy_vs_diffusion.png)
+
+**Limitations**
 1. computational cost: The diffusion model needs a longer time to train (a few GPUs hours compared with tens of minutes) and inference (iterative sample steps compared with one forward pass). This makes high frequency control and planning difficult to use diffusion model.
 2. handle shifting distribution: in online RL, the distribution of the policy will shift keep changing while adapting diffusion model to the new distribution need large amount of data and long time to train. This limit diffusion model to be trained in a fixed rather than dynamic dataset.
 3. high variance: depends on initial guess and random sampling, the variance of the diffusion model is high, which limits its application in high precision or safety-critical tasks.
