@@ -37,7 +37,8 @@ From the control and planning perspective, there are lots of scenarios where we 
 | --- | --- | --- |
 | Imitation learning | Match the expert's action distribution with limited data. Common method like GAIL using adversarial training to match the distribution. BC cannot handle multimodal distribution. | Diffusion model can matching the distribution of the expert's action with high capacity and high expressiveness. |
 | Offline reinforcement learning | Perform better than dataset with a large number of demonstrations. Here need to make sure the policy's action distribution is close to the dataset while improving the performance. Common method like CQL penalize OOD samples, make the method overconserative. | Diffusion model can match the dataset's action and regularize the policy's action distribution. |
-| Model-based reinforcement learning | Match the dynamic model and (sometimes) policy's action distribution. First learning the model and then use the model to plan in a auto-regressive manner. This method suffers from compounding error. | Diffusion model can handle non-autoregressive and multimodal distribution matching by predicting the whole trajectory sequence at once. |
+| Model-based reinforcement learning | Match the dynamic model and (sometimes) policy's action distribution. First learning the model and then use the model to plan in a au
+to-regressive manner. This method suffers from compounding error. | Diffusion model can handle non-autoregressive and multimodal distribution matching by predicting the whole trajectory sequence at once. |
 
 
 
