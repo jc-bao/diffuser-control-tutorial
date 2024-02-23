@@ -6,41 +6,47 @@ Tutorial outline:
 2. Motivation: why do we need a diffuser in control and planning?
 3. Practice: how to use a diffuser in control and planning?
 4. Literatures: recent research in a diffuser for control and planning
-5. Limitations: what are the remaining challenges?
-6. Summary
+5. Summary & Limitations: what we can do and what we cannot do
 
 ## Recap: diffusion model
 
-We learn a score function (similar to the noise direction) and use that to recover our distribution.
-Empirical success:
+Diffusion model is a generative model that can generate samples from a given distribution. It is a powerful distribution matching tool that can match the distribution of the dataset, which is widely used in image generation, text generation, and other generative tasks.
 
 ![diffusion examples](figs/dalle.png)
 
-* handling multimodal action distributions
-* being suitable for high-dimensional action spaces
-* exhibiting impressive training stability
+The key component of the diffusion model is the score function, which is the gradient of the log probability of the data. Compared with directly learning the distribution, learning the score function given different noise levels is easier and more stable. 
 
-## Movitation: why do we need a diffuser?
+$$
+\boldsymbol{x}_{i+1} \leftarrow \boldsymbol{x}_i+c \nabla \log p\left(\boldsymbol{x}_i\right)+\sqrt{2 c} \boldsymbol{\epsilon}, \quad i=0,1, \ldots, K
+$$
 
-Overall objective: use a diffuser as a powerful distribution matching tool for control and planning problems.
+![Annealed Langevin dynamics combine a sequence of Langevin chains with gradually decreasing noise scales.](figs/distribution_match.gif)
 
-Where do we need a distribution match?
+The unique properties of the diffusion model include:
 
-1. **Imitation learning**: match the expert's action distribution (mentioning GAIL, adverserial training. with diffusion model, it become more stable. especially for multi-task)
-   * key problem: matching a high-dimensional action distribution with a small number of optimal demonstrations
-   * challenge: powerful/expressive distribution matching tool
-2. **Offline reinforcement learning**: match the policy's action distribution (need to be expressive enough to match the distribution of the policy and also not deviate too much from the expert's distribution, extrapolation error problem)
-   * key problem: become better than the data with a large number of demonstrations
-   * challenge: extrapolation error problem
-   * current solution: panelize/constrain OOD samples -> overconserative
-3. **Model-based reinforcement learning**: match the dynamic model (need to work in the long horizon) + policy's action distribution(sometimes)
+* **Multimodal**: It can handle multimodal action distributions
+* The method can be scaled to high-dimensional distribution matching problems. 
+* With sound mathematical foundation and standard training procedure via multi-stage diffusion, it is stable to train.
+
+
+## Motivation: why do we need a diffuser in control and planning?
+
+From the control and planning perspective, there are lots of scenarios where we need to match the distribution of the dataset, such as: 
+
+| Scenario | Challenge | Solution |
+| --- | --- | --- |
+| Imitation learning | Match the expert's action distribution with limited data. Common method like GAIL using adversarial training to match the distribution. BC cannot handle multimodal distribution. | Diffusion model can matching the distribution of the expert's action with high capacity and high expressiveness. |
+| Offline reinforcement learning | Perform better than dataset with a large number of demonstrations. Here need to make sure the policy's action distribution is close to the dataset while improving the performance. Common method like CQL penalize OOD samples, make the method overconserative. | Diffusion model can match the dataset's action and regularize the policy's action distribution. |
+| Model-based reinforcement learning | Match the dynamic model and (sometimes) policy's action distribution. First learning the model and then use the model to plan in a auto-regressive manner. This method suffers from compounding error. | Diffusion model can handle non-autoregressive and multimodal distribution matching by predicting the whole trajectory sequence at once. |
+
+
 
 Why does diffusion work here?
-7. non-autoregressive (no sequential dependency): compounding error is not a problem, but still can generate any length of sequence with certain architecture choices
-8. multimodal: can handle multimodal action distributions
-9. matching the distribution: can match the distribution of the expert's action
-10. High capacity + high expressiveness: can handle high-dimensional action spaces -> foundation models, 50 demonstrations per task
-11. stable training: with a sound mathematical foundation and standard training procedure via multi-stage diffusion, it is stable to train
+1. non-autoregressive (no sequential dependency): compounding error is not a problem, but still can generate any length of sequence with certain architecture choices
+2. multimodal: can handle multimodal action distributions
+3. matching the distribution: can match the distribution of the expert's action
+4.  High capacity + high expressiveness: can handle high-dimensional action spaces -> foundation models, 50 demonstrations per task
+5.  stable training: with a sound mathematical foundation and standard training procedure via multi-stage diffusion, it is stable to train
 
 smooth
 
