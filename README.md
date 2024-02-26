@@ -1,5 +1,7 @@
 # Diffusion Model for Control and Planning Tutorial
 
+> Chaoyi Pan 2024.2.26
+
 Tutorial outline:
 
 1. 🔄 Recap: What is a Diffusion Model / What Problem Does It Solve?
@@ -195,7 +197,3 @@ However, the diffusion model also has its limitations, which include:
 2. Handling shifting distribution: In online RL, the distribution of the policy will keep changing. Adapting the diffusion model to the new distribution requires a large amount of data and a long time to train. This limits the diffusion model to be trained in a fixed rather than a dynamic dataset.
 3. High variance: Depending on the initial guess and random sampling, the variance of the diffusion model is high, which limits its application in high-precision or safety-critical tasks.
 4. Constraint satisfaction: The diffusion model does not guarantee to satisfy the constraints, especially when tested in a constraint different from the training set. This limits its application in adapting to new constraints and tasks.
-
-## TODO
-
-1. tutorial on a simple control problem

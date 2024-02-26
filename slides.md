@@ -15,6 +15,20 @@ transition: fade
 class: text-left
 ---
 
+# 📖 Tutorial Outline
+
+<v-clicks>
+
+1. 🔄 Recap: What is a Diffusion Model?
+2. 🚀 Motivation: Why a Generative Model in Control and Planning?
+3. 🛠️ Practice: How to Use the Diffuser?
+4. 📚 Literatures: Recent Research Progress in Diffusion for RL/Control
+5. 📝 Summary & Challenges in Diffusion Models
+
+</v-clicks>
+
+---
+
 # 🔄 Recap: What is a Diffusion Model?
 
 - Keynote: Generative model for distribution matching.
@@ -23,7 +37,7 @@ class: text-left
 
 ---
 
-# 🔄 Recap: Core of Diffusion Model
+# 🔄 Recap: What is a Diffusion Model?
 
 - Keynote: Generative model for distribution matching.
 - Applications: Image and text generation, creative tasks.
@@ -35,7 +49,7 @@ $$
 
 ---
 
-# 🔄 Recap: Advantages of Diffusion Model
+# 🔄 Recap: What is a Diffusion Model?
 
 - Keynote: Generative model for distribution matching.
 - Applications: Image and text generation, creative tasks.
