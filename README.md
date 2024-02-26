@@ -198,7 +198,7 @@ However, the diffusion model also has its limitations, which include:
 3. High variance: Depending on the initial guess and random sampling, the variance of the diffusion model is high, which limits its application in high-precision or safety-critical tasks.
 4. Constraint satisfaction: The diffusion model does not guarantee to satisfy the constraints, especially when tested in a constraint different from the training set. This limits its application in adapting to new constraints and tasks.
 
-**Resouces**
+**Resources**
 
 For more information, please refer to the following resources:
 
