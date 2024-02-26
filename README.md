@@ -197,3 +197,15 @@ However, the diffusion model also has its limitations, which include:
 2. Handling shifting distribution: In online RL, the distribution of the policy will keep changing. Adapting the diffusion model to the new distribution requires a large amount of data and a long time to train. This limits the diffusion model to be trained in a fixed rather than a dynamic dataset.
 3. High variance: Depending on the initial guess and random sampling, the variance of the diffusion model is high, which limits its application in high-precision or safety-critical tasks.
 4. Constraint satisfaction: The diffusion model does not guarantee to satisfy the constraints, especially when tested in a constraint different from the training set. This limits its application in adapting to new constraints and tasks.
+
+**Resouces**
+
+For more information, please refer to the following resources:
+
+[Paper list with labels](https://panchaoyi.notion.site/14ed102954ce4da79f146a641925afd7?v=a447d0b5d5a949dfbb18e253c3492a8f&pvs=4): A detailed summary of recent papers organized by me. 
+
+[Diffusion for RL survey paper](https://arxiv.org/abs/2311.01223): A comprehensive survey paper on diffusion models in RL.
+
+[Diffusion for RL repo](https://github.com/apexrl/Diff4RLSurvey): A comprehensive repo on diffusion models in RL.
+
+[Awesome Diffusion RL repo](https://github.com/opendilab/awesome-diffusion-model-in-rl): Another comprehensive repo on diffusion models in RL.
